@@ -1,6 +1,6 @@
 class Node():
     def __init__(self, state, parent, action):
-        self.state = state
+        self.state = state  # (movie_id, person_id)
         self.parent = parent
         self.action = action
 

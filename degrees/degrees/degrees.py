@@ -21,13 +21,13 @@ def load_data(directory):
     with open(f"{directory}/people.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            people[row["id"]] = {
+            people[row["id"]] = {   # person id
                 "name": row["name"],
                 "birth": row["birth"],
-                "movies": set()
+                "movies": set()     # repo the sets of movie_id
             }
             if row["name"].lower() not in names:
-                names[row["name"].lower()] = {row["id"]}
+                names[row["name"].lower()] = {row["id"]}    # names[name] = {ids} set
             else:
                 names[row["name"].lower()].add(row["id"])
 
@@ -35,10 +35,10 @@ def load_data(directory):
     with open(f"{directory}/movies.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            movies[row["id"]] = {
+            movies[row["id"]] = {   # movie_id
                 "title": row["title"],
                 "year": row["year"],
-                "stars": set()
+                "stars": set()      # repo the sets of person_id   
             }
 
     # Load stars
@@ -91,7 +91,42 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-
+    frontier = QueueFrontier()
+    
+    initial_node = Node((None,source), None,None)  #source  and the target are the person id
+    frontier.add(initial_node)
+    
+    resultList = []
+    
+    while True:
+        
+        if frontier.empty():
+            return None
+        
+        new_node = frontier.remove()
+        if new_node.state[1] == target:
+            # find the target is the new_node
+            print("find the target node!")
+            parent_node = new_node
+            while parent_node.parent != None:
+                resultList.append((parent_node.action,parent_node.state[1]))
+                parent_node = parent_node.parent
+            return resultList
+        
+        new_person_id = new_node.state[1]
+        neighbors = neighbors_for_person(new_person_id)
+        
+        # update the frontier
+        for neighbor in neighbors:
+            if frontier.contains_state(neighbor):
+                continue    # if 
+            node = Node(neighbor,new_node,neighbor[0])  
+            frontier.add(node)
+        
+    
+        
+    
+    
     # TODO
     raise NotImplementedError
 
@@ -123,9 +158,15 @@ def person_id_for_name(name):
 
 
 def neighbors_for_person(person_id):
-    """
-    Returns (movie_id, person_id) pairs for people
-    who starred with a given person.
+    """Returns (movie_id, person_id) pairs for people
+    who starred with a given person.   
+    
+
+    Args:
+        person_id (int): the num person_id
+
+    Returns:
+        set : the sets of (movie_id,person_id) and the person_id is the stars who companied this person 
     """
     movie_ids = people[person_id]["movies"]
     neighbors = set()
