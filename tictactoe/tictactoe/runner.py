@@ -92,6 +92,8 @@ while True:
         game_over = ttt.terminal(board)
         player = ttt.player(board)
 
+        # print("game_over is ", game_over)
+        # print( "player is ", player)
         # Show title
         if game_over:
             winner = ttt.winner(board)
