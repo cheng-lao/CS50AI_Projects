@@ -170,34 +170,40 @@ def minimax(board):
     Returns the optimal action for the current player on the board.
     """
     
-    def MaxValue(board):
+    def MaxValue(board, alpha, beta):
         if terminal(board):
             return utility(board)
         
         val = -math.inf
         for action in actions(board):
-            val = max(val,MinValue(result(board,action)))
+            val = max(val,MinValue(result(board,action),alpha, beta))
+            alpha = max(alpha,val)
+            if alpha > beta: return val
         
         return val
     
-    def MinValue(board):
+    def MinValue(board, alpha, beta):
         if terminal(board):
             return utility(board)
         
         val = math.inf
         for action in actions(board):
-            val = min(val , MaxValue(result(board,action)))
-        
+            val = min(val , MaxValue(result(board,action),alpha, beta))
+            beta = min(beta,val)
+            if beta<alpha : return val
+            
         return val
     
     if terminal(board):
         raise Exception("minimax function receive a terminate state")
         # return utility(board)
-    
+        
+    alpha = -math.inf
+    beta = math.inf
     value = -math.inf
     chooseAction = None
     for action in actions(board):
-        res = MinValue(result(board,action))
+        res = MinValue(result(board,action), alpha,beta)
         if res > value:
             chooseAction = action
             value = res
