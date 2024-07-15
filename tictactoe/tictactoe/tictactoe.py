@@ -168,6 +168,7 @@ def utility(board):
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
+    turorial : http://t.csdnimg.cn/V2yQY
     """
     
     def MaxValue(board, alpha, beta):
