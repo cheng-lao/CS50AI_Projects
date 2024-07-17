@@ -56,7 +56,7 @@ class Minesweeper():
         """
         Returns the number of mines that are
         within one row and column of a given cell,
-        not including the cell itself.
+        not including the cell itself.  (size is 3 x 3)
         """
 
         # Keep count of nearby mines
@@ -105,12 +105,18 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        raise NotImplementedError
+        if len(self.cells) == self.count:
+            return self.cells
+        
+        # raise NotImplementedError
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
+        if self.count == 0:
+            return self.cells
+        
         raise NotImplementedError
 
     def mark_mine(self, cell):
@@ -118,14 +124,23 @@ class Sentence():
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
-        raise NotImplementedError
+        if cell in self.cells:
+            self.count -= 1
+            self.cells = self.cells - set(cell)
+        
+        return 
+        # raise NotImplementedError
 
     def mark_safe(self, cell):
         """
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
-        raise NotImplementedError
+        if cell in self.cells:
+            self.cells = self.cells - set(cell)
+        
+        return
+        # raise NotImplementedError
 
 
 class MinesweeperAI():
@@ -182,6 +197,28 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        self.moves_made.add(cell)   # mark the cell as a move that has been made
+        
+        self.mark_safe(cell)    # mark the cell as safe
+        
+        cells = []
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+                
+                if (i, j) == cell:
+                    continue
+                
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    cells.append((i,j))
+        
+        newSentence = Sentence(cells,count)
+        self.knowledge.append(newSentence)  # add a new sentence to the AI's knowledge base
+        
+        for sentence in self.knowledge:
+            if sentence.cells.issubset(newSentence.cells):
+                pass
+        
+        
         raise NotImplementedError
 
     def make_safe_move(self):
